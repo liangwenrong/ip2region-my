@@ -9,26 +9,36 @@ import org.junit.Test;
 import org.logstash.plugins.ConfigurationImpl;
 import org.logstash.plugins.ContextImpl;
 
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
 
-public class JavaFilterExampleTest {
+public class Ip2RegionFilterTest {
 
     @Test
-    public void testJavaExampleFilter() {
-        String sourceField = "foo";
-        Configuration config = new ConfigurationImpl(Collections.singletonMap("source", sourceField));
-        Context context = new ContextImpl(null);
-        JavaFilterExample filter = new JavaFilterExample("test-id", config, context);
+    public void testJavaExampleFilter() throws FileNotFoundException {
+        String sourceField = "ip";
+        Map<String, Object> source = new HashMap<>();
+        source.put("source", sourceField);
+//        source.put("remove_field", new ArrayList<String >(){{
+//            add("city");}});
+        source.put("database", "E:\\coding\\IdeaProjects\\other\\ip2region\\data\\ip2region.db");
+        Configuration config = new ConfigurationImpl(source);
+        Context context = new ContextImpl(null, null);
+        Ip2regionFilter filter = new Ip2regionFilter("test-id", config, context);
 
         Event e = new org.logstash.Event();
         TestMatchListener matchListener = new TestMatchListener();
-        e.setField(sourceField, "abcdef");
+        e.setField(sourceField, "111.231.236.91");
+//        e.setField("add", );
         Collection<Event> results = filter.filter(Collections.singletonList(e), matchListener);
 
         Assert.assertEquals(1, results.size());
-        Assert.assertEquals("fedcba", e.getField(sourceField));
+//        Assert.assertEquals("fedcba", e.getField(sourceField));
         Assert.assertEquals(1, matchListener.getMatchCount());
     }
 }
