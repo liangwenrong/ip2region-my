@@ -23,7 +23,7 @@ import java.util.List;
 
 // class name must match plugin name
 @LogstashPlugin(name = "ip2region")
-public class Ip2regionFilter implements Filter {
+public class ip2region implements Filter {
 
     public static final PluginConfigSpec<String> SOURCE_CONFIG =
             PluginConfigSpec.stringSetting("source", "ip");//default is "ip"
@@ -56,7 +56,7 @@ public class Ip2regionFilter implements Filter {
     private String dbfile = "";
 
 
-    public Ip2regionFilter(String id, Configuration config, Context context) throws FileNotFoundException {
+    public ip2region(String id, Configuration config, Context context) throws FileNotFoundException {
         // constructors should validate configuration options
         this.id = id;
         this.ipField = config.get(SOURCE_CONFIG);

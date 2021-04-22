@@ -16,7 +16,7 @@ pluginInfo.authors         = ['lwr']
 pluginInfo.email           = ['info@elastic.co']
 pluginInfo.homepage        = "http://www.elastic.co/guide/en/logstash/current/index.html"
 pluginInfo.pluginType      = "filter"
-pluginInfo.pluginClass     = "Ip2regionFilter"
+pluginInfo.pluginClass     = "ip2region"
 pluginInfo.pluginName      = "ip2region" // must match the @LogstashPlugin annotation in the main plugin class
 // ===========================================================================
 

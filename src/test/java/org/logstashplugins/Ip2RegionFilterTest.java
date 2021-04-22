@@ -10,7 +10,6 @@ import org.logstash.plugins.ConfigurationImpl;
 import org.logstash.plugins.ContextImpl;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class Ip2RegionFilterTest {
         source.put("database", "E:\\coding\\IdeaProjects\\other\\ip2region\\data\\ip2region.db");
         Configuration config = new ConfigurationImpl(source);
         Context context = new ContextImpl(null, null);
-        Ip2regionFilter filter = new Ip2regionFilter("test-id", config, context);
+        ip2region filter = new ip2region("test-id", config, context);
 
         Event e = new org.logstash.Event();
         TestMatchListener matchListener = new TestMatchListener();
