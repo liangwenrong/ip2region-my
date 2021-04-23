@@ -55,6 +55,14 @@ public class ip2region implements Filter {
 
     private String dbfile = "";
 
+    boolean is_city_id;
+    boolean is_region;
+    boolean is_data_ptr;
+    boolean is_country;
+    boolean is_province;
+    boolean is_city;
+    boolean is_net_type;
+
 
     public ip2region(String id, Configuration config, Context context) throws FileNotFoundException {
         // constructors should validate configuration options
@@ -74,6 +82,14 @@ public class ip2region implements Filter {
             }
         }
 
+        is_city_id = addFields.contains("city_id");
+        is_region = addFields.contains("region");
+        is_data_ptr = addFields.contains("data_ptr");
+        is_country = addFields.contains("country");
+        is_province = addFields.contains("province");
+        is_city = addFields.contains("city");
+        is_net_type = addFields.contains("net_type");
+
         dbfile = config.get(DB_FILE_CONFIG);
         if (dbfile == null) {
             throw new FileNotFoundException("database => \"/path/to/dbfile\" not set");
@@ -87,30 +103,31 @@ public class ip2region implements Filter {
             Object f = e.getField(ipField);
             if (f instanceof String) {
                 DataBlock ip_msg = getRegion((String) f);
-                if (addFields.contains("city_id")) {
+
+                if (is_city_id) {
                     e.setField("city_id", ip_msg.getCityId());
                 }
 //                region -> {RubyString@8500} "中国|0|广东|广州|电信"
                 String region = ip_msg.getRegion();
-                if (addFields.contains("region")) {
+                if (is_region) {
                     e.setField("region", region);
                 }
-                if (addFields.contains("data_ptr")) {
+                if (is_data_ptr) {
                     e.setField("data_ptr", ip_msg.getDataPtr());
                 }
                 if (region != null) {
                     String[] split = region.split("\\|");
                     if (split.length > 4) {
-                        if (addFields.contains("country")) {
+                        if (is_country) {
                             e.setField("country", split[0]);
                         }
-                        if (addFields.contains("province")) {
+                        if (is_province) {
                             e.setField("province", split[2]);
                         }
-                        if (addFields.contains("city")) {
+                        if (is_city) {
                             e.setField("city", split[3]);
                         }
-                        if (addFields.contains("net_type")) {
+                        if (is_net_type) {
                             e.setField("net_type", split[4]);
                         }
                     }
