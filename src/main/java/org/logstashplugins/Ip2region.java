@@ -112,37 +112,38 @@ public class Ip2region implements Filter {
             Object f = e.getField(ipField);
             if (f instanceof String) {
                 DataBlock ip_msg = getRegion((String) f);
-
-                if (is_city_id) {
-                    e.setField("city_id", ip_msg.getCityId());
-                }
+                if (ip_msg != null) {
+                    if (is_city_id) {
+                        e.setField("city_id", ip_msg.getCityId());
+                    }
 //                region -> {RubyString@8500} "中国|0|广东|广州|电信"
-                String region = ip_msg.getRegion();
-                if (is_region) {
-                    e.setField("region", region);
-                }
-                if (is_data_ptr) {
-                    e.setField("data_ptr", ip_msg.getDataPtr());
-                }
-                if (region != null) {
-                    String[] split = region.split("\\|");
-                    if (split == null) {
-                        System.out.println("error: region=" + region);
-                    } else if (split.length > 4) {
-                        if (is_country) {
-                            e.setField("country", split[0]);
-                        }
-                        if (is_region_code) {
-                            e.setField("region_code", split[1]);
-                        }
-                        if (is_province) {
-                            e.setField("province", split[2]);
-                        }
-                        if (is_city) {
-                            e.setField("city", split[3]);
-                        }
-                        if (is_net_type) {
-                            e.setField("net_type", split[4]);
+                    String region = ip_msg.getRegion();
+                    if (is_region) {
+                        e.setField("region", region);
+                    }
+                    if (is_data_ptr) {
+                        e.setField("data_ptr", ip_msg.getDataPtr());
+                    }
+                    if (region != null) {
+                        String[] split = region.split("\\|");
+                        if (split == null) {
+                            System.out.println("error: region=" + region);
+                        } else if (split.length > 4) {
+                            if (is_country) {
+                                e.setField("country", split[0]);
+                            }
+                            if (is_region_code) {
+                                e.setField("region_code", split[1]);
+                            }
+                            if (is_province) {
+                                e.setField("province", split[2]);
+                            }
+                            if (is_city) {
+                                e.setField("city", split[3]);
+                            }
+                            if (is_net_type) {
+                                e.setField("net_type", split[4]);
+                            }
                         }
                     }
                 }
@@ -177,7 +178,11 @@ public class Ip2region implements Filter {
         }
         ip = ip.trim();
         try {
-            return (DataBlock) method.invoke(searcher, ip);
+            DataBlock obj = (DataBlock) method.invoke(searcher, ip);
+            if (obj == null) {
+                obj = new DataBlock(-1, "null");
+            }
+            return obj;
         } catch (IllegalAccessException | InvocationTargetException e) {
             System.out.println("method.invoke(searcher, ip) error");
             return new DataBlock(-1, ip);
