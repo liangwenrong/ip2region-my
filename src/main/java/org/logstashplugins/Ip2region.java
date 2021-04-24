@@ -126,7 +126,9 @@ public class Ip2region implements Filter {
                 }
                 if (region != null) {
                     String[] split = region.split("\\|");
-                    if (split.length > 4) {
+                    if (split == null) {
+                        System.out.println("error: region=" + region);
+                    } else if (split.length > 4) {
                         if (is_country) {
                             e.setField("country", split[0]);
                         }
