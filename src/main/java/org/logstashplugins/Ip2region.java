@@ -16,14 +16,14 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 // class name must match plugin name
 @LogstashPlugin(name = "ip2region")
-public class ip2region implements Filter {
+public class Ip2region implements Filter {
 
     public static final PluginConfigSpec<String> SOURCE_CONFIG =
             PluginConfigSpec.stringSetting("source", "ip");//default is "ip"
@@ -38,6 +38,7 @@ public class ip2region implements Filter {
                 add("data_ptr");
 
                 add("country");
+                add("region_code");
                 add("province");
                 add("city");
                 add("net_type");
@@ -59,17 +60,18 @@ public class ip2region implements Filter {
     boolean is_region;
     boolean is_data_ptr;
     boolean is_country;
+    boolean is_region_code;
     boolean is_province;
     boolean is_city;
     boolean is_net_type;
 
 
-    public ip2region(String id, Configuration config, Context context) throws FileNotFoundException {
+    public Ip2region(String id, Configuration config, Context context){
         // constructors should validate configuration options
         this.id = id;
         this.ipField = config.get(SOURCE_CONFIG);
 
-        this.addFields = config.get(ADD_FIELD_CONFIG);
+        this.addFields = new ArrayList<>(config.get(ADD_FIELD_CONFIG));
         this.removeFields = config.get(REMOVE_FIELD_CONFIG);
         if (removeFields != null) {
             Iterator<Object> iterator = removeFields.iterator();
@@ -86,15 +88,22 @@ public class ip2region implements Filter {
         is_region = addFields.contains("region");
         is_data_ptr = addFields.contains("data_ptr");
         is_country = addFields.contains("country");
+        is_region_code = addFields.contains("region_code");
         is_province = addFields.contains("province");
         is_city = addFields.contains("city");
         is_net_type = addFields.contains("net_type");
 
         dbfile = config.get(DB_FILE_CONFIG);
         if (dbfile == null) {
-            throw new FileNotFoundException("database => \"/path/to/dbfile\" not set");
+            System.out.println("database => \"/path/to/dbfile\" not set");
+            throw new RuntimeException("database => \"/path/to/dbfile\" not set");
         }
-        config(dbfile, DbSearcher.BTREE_ALGORITHM);
+        try {
+            config(dbfile, DbSearcher.BTREE_ALGORITHM);
+        } catch (FileNotFoundException e) {
+            System.out.println("FileNotFoundException:" + dbfile);
+            throw new RuntimeException("FileNotFoundException:" + dbfile);
+        }
     }
 
     @Override
@@ -120,6 +129,9 @@ public class ip2region implements Filter {
                     if (split.length > 4) {
                         if (is_country) {
                             e.setField("country", split[0]);
+                        }
+                        if (is_region_code) {
+                            e.setField("region_code", split[1]);
                         }
                         if (is_province) {
                             e.setField("province", split[2]);
@@ -148,7 +160,7 @@ public class ip2region implements Filter {
     @Override
     public Collection<PluginConfigSpec<?>> configSchema() {
         // should return a list of all configuration options for this plugin
-        return Collections.singletonList(SOURCE_CONFIG);
+        return new ArrayList<>(Arrays.asList(SOURCE_CONFIG, DB_FILE_CONFIG, ADD_FIELD_CONFIG, REMOVE_FIELD_CONFIG));
     }
 
     @Override

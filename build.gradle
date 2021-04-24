@@ -16,7 +16,7 @@ pluginInfo.authors         = ['lwr']
 pluginInfo.email           = ['info@elastic.co']
 pluginInfo.homepage        = "http://www.elastic.co/guide/en/logstash/current/index.html"
 pluginInfo.pluginType      = "filter"
-pluginInfo.pluginClass     = "ip2region"
+pluginInfo.pluginClass     = "Ip2region"
 pluginInfo.pluginName      = "ip2region" // must match the @LogstashPlugin annotation in the main plugin class
 // ===========================================================================
 
@@ -99,6 +99,10 @@ tasks.register("removeObsoleteJars") {
 
 tasks.register("gem"){
     dependsOn ([downloadAndInstallJRuby, removeObsoleteJars, vendor, generateRubySupportFiles])
+//    dependsOn downloadAndInstallJRuby
+//    dependsOn removeObsoleteJars
+//    dependsOn vendor
+//    dependsOn generateRubySupportFiles
     doLast {
         buildGem(projectDir, buildDir, pluginInfo.pluginFullName() + ".gemspec")
     }

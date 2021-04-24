@@ -28,7 +28,7 @@ public class Ip2RegionFilterTest {
         source.put("database", "E:\\coding\\IdeaProjects\\other\\ip2region\\data\\ip2region.db");
         Configuration config = new ConfigurationImpl(source);
         Context context = new ContextImpl(null, null);
-        ip2region filter = new ip2region("test-id", config, context);
+        Ip2region filter = new Ip2region("test-id", config, context);
 
         Event e = new org.logstash.Event();
         TestMatchListener matchListener = new TestMatchListener();
