@@ -177,15 +177,17 @@ public class Ip2region implements Filter {
             return new DataBlock(0, "");
         }
         ip = ip.trim();
-        try {
-            DataBlock obj = (DataBlock) method.invoke(searcher, ip);
-            if (obj == null) {
-                obj = new DataBlock(-1, "null");
+        synchronized (searcher) {
+            try {
+                DataBlock obj = (DataBlock) method.invoke(searcher, ip);
+                if (obj == null) {
+                    obj = new DataBlock(-1, "null");
+                }
+                return obj;
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                System.out.println("method.invoke(searcher, ip) error");
+                return new DataBlock(-1, ip);
             }
-            return obj;
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            System.out.println("method.invoke(searcher, ip) error");
-            return new DataBlock(-1, ip);
         }
     }
 
